@@ -1,26 +1,28 @@
 import { Server } from "socket.io";
+import { createServer } from "http";
+import express from "express";
 import logger from "../log/logger.js";
-import path from "path";
-import { fileURLToPath } from "url";
 
 /**
  * 创建服务器
  * @param {服务器端口} port
  * @returns {服务器实例}
  */
-// 获取ESM模块的目录路径
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 // 在createServer函数中添加路径处理
-export function createServer(port, config) {
+export function createIoServer(port, config) {
 	try {
-		// Windows/Linux通用日志路径
-		const logDir = path.join(__dirname, "../../logs");
+		const app = new express();
 
-		const io = new Server(config);
-		// 显式创建HTTP服务器
-		io.listen(port);
+		// 修正 HTTP 服务器创建方式（使用 Koa 中间件）
+		const httpServer = createServer(app);
+
+		// 合并配置并创建唯一的 Socket.IO 实例
+		const io = new Server(httpServer, config);
+
+		// 修正服务器监听方式
+		httpServer.listen(port, () => {
+			logger.info(`服务已启动在端口:${port}`);
+		});
 
 		// 监听底层HTTP服务器事件
 		io.httpServer.on("listening", () => {

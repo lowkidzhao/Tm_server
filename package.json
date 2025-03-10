@@ -6,9 +6,9 @@
   "type": "module",
   "scripts": {
     "start": "cross-env NODE_ENV=production pm2 start src/index.js --name tm_server --watch",
-    "win-start": "npm run start",
+    "win-start": "pnpm run start",
     "linux-start": "sudo npm run start",
-    "stop": "pm2 delete server"
+    "stop": "pm2 delete tm_server"
   },
   "keywords": [
     "server",
@@ -18,6 +18,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.5.2",
   "dependencies": {
+    "express": "4",
     "logform": "^2.7.0",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",

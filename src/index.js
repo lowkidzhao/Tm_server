@@ -1,6 +1,6 @@
 import os from "os";
 import logger from "./log/logger.js";
-import { createServer, Start } from "./core/sever.js";
+import { createIoServer, Start } from "./core/server.js";
 import config from "../config.js";
 
 // 检查操作系统
@@ -13,7 +13,7 @@ if (os.platform() === "win32") {
 	}
 }
 // 启动服务器时传递配置
-const server = createServer(config.PORT, {
+const server = createIoServer(config.PORT, {
 	...config.SOCKET_SETTINGS,
 	// 可以在此扩展其他配置
 });

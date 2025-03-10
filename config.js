@@ -11,5 +11,9 @@ export default {
 		pingTimeout: 50000,
 		pingInterval: 15000,
 		maxHttpBufferSize: 1e8,
+		cors: {
+			origin: "*",
+			methods: ["GET", "POST"],
+		},
 	},
 };
