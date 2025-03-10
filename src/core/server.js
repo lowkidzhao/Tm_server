@@ -13,7 +13,7 @@ export function createIoServer(port, config) {
 	try {
 		const app = new express();
 
-		// 修正 HTTP 服务器创建方式（使用 Koa 中间件）
+		// 修正 HTTP 服务器创建方式
 		const httpServer = createServer(app);
 
 		// 合并配置并创建唯一的 Socket.IO 实例
