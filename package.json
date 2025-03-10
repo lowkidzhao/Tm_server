@@ -1,0 +1,31 @@
+{
+  "name": "tm_server_socket",
+  "version": "1.0.0",
+  "description": "a socket server for talkme",
+  "main": "./src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production pm2 start src/index.js --name tm_server --watch",
+    "win-start": "npm run start",
+    "linux-start": "sudo npm run start",
+    "stop": "pm2 delete server"
+  },
+  "keywords": [
+    "server",
+    "socket"
+  ],
+  "author": "pushme",
+  "license": "ISC",
+  "packageManager": "pnpm@10.5.2",
+  "dependencies": {
+    "logform": "^2.7.0",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "pm2": "^5.4.3"
+  }
+}
