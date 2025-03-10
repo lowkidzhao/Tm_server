@@ -8,7 +8,7 @@
     "start": "cross-env NODE_ENV=production pm2 start src/index.js --name tm_server --watch",
     "win-start": "pnpm run start",
     "linux-start": "sudo npm run start",
-    "stop": "pm2 delete tm_server"
+    "stop": "pm2 delete tm_server && pm2 save"
   },
   "keywords": [
     "server",
@@ -20,13 +20,13 @@
   "dependencies": {
     "express": "4",
     "logform": "^2.7.0",
+    "pm2": "^5.4.3",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
-    "pm2": "^5.4.3"
+    "cross-env": "^7.0.3"
   }
 }
