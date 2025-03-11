@@ -81,6 +81,10 @@ export function Start(io) {
 			socket.on("offer", (data) => {
 				// 定向发送给指定用户
 				const targetSocketId = userAliasMap.get(data.name);
+				if (!targetSocketId) {
+					logger.error("目标用户不存在");
+					return;
+				}
 				socket
 					.to(targetSocketId)
 					.emit("offer_get", { id: socket.id, offer: data.offer });
@@ -89,6 +93,10 @@ export function Start(io) {
 			socket.on("answer", (data) => {
 				// 定向发送给指定用户
 				const targetSocketId = socketMap.get(data.id);
+				if (!targetSocketId) {
+					logger.error("目标用户不存在");
+					return;
+				}
 				socket.to(targetSocketId).emit("answer_get", data.answer);
 			});
 
