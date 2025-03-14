@@ -1,5 +1,7 @@
 export default {
-	PORT: process.env.PORT || 1145,
+	PORT: process.env.PORT,
+	// 数据库路径
+	path: "../DB/",
 	// 统一路径分隔符
 	LOG_DIR: process.platform === "win32" ? "logs" : "/var/log/talkme",
 	// Windows需要处理特殊权限
