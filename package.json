@@ -5,10 +5,9 @@
   "main": "./src/index.js",
   "type": "module",
   "scripts": {
-    "start": "cross-env NODE_ENV=production pm2 start src/index.js --name tm_server --watch",
-    "win-start": "pnpm run start",
-    "linux-start": "sudo pnpm run start",
-    "stop": "pm2 delete tm_server && pm2 save"
+    "start": "cross-env NODE_ENV=production pm2 start src/index.js --name tm_server --watch --",
+    "win-start": "pnpm run start --",
+    "linux-start": "sudo pnpm run start --"
   },
   "keywords": [
     "server",

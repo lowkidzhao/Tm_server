@@ -36,7 +36,7 @@ try {
 let db;
 try {
 	db = new Database(config.path + "user.db");
-	console.log("Connected to database-user.db successfully");
+	logger.info("Connected to database-user.db successfully");
 
 	// 可选：执行初始化SQL
 	db.prepare(

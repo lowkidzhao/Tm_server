@@ -1,5 +1,5 @@
 export default {
-	PORT: process.env.PORT,
+	PORT: process.env.PORT || 1145,
 	// 数据库路径
 	path: "./DB/",
 	// 统一路径分隔符
