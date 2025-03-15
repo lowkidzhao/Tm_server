@@ -6,9 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "cross-env NODE_ENV=production pm2 start src/index.js --name tm_server --watch --",
-    "dev": "cross-env NODE_ENV=development pm2 start src/index.js --name tm_server --watch --",
-    "stop": "pm2 delete tm_server",
-    "restart": "pm2 restart tm_server",
+    "stop": "pm2 delete tm_server || true",
+    "restart": "pnpm run stop && pnpm run start",
     "logs": "pm2 logs tm_server",
     "build": "npm rebuild better-sqlite3 --build-from-source --napi"
   },
