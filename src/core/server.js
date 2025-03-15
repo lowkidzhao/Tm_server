@@ -46,11 +46,25 @@ export function createIoServer(port, config) {
  */
 export function Start(io, db) {
 	try {
+		// 检查用户名是否已存在
+		const checkName = db.prepare("SELECT * FROM users WHERE name = :name");
 		// 存储用户映射关系
 		const userAliasMap = new Map(); // 别名 -> socket.id
 		const socketMap = new Map(); // socket.id -> socket
 
 		io.on("connection", (socket) => {
+			//注册
+			socket.on("register", (data) => {
+				const { name, email, password } = data;
+				try {
+					const result = checkName.all({ name: name });
+					logger.info(result);
+					socket.emit("register", result);
+				} catch (err) {
+					logger.error("注册出错:", err);
+					socket.emit("register", { error: "注册出错" });
+				}
+			});
 			// 监听客户端连接 / 存储socket实例
 			socketMap.set(socket.id, socket);
 			logger.info("a user connected__" + socket.id);
