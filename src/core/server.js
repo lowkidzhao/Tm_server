@@ -45,6 +45,7 @@ export function Start(io, db) {
 		const socketMap = new Map(); // socket.id -> name
 
 		io.on("connection", (socket) => {
+			socket.emit("message", "Hello from Socket.IO!");
 			// 调用userapi
 			userapi(socket, userAliasMap, socketMap, dataSql);
 			// 调用webrtcapi

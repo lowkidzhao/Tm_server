@@ -1,3 +1,15 @@
+/**
+ * 用户api
+ * 包括：
+ * 1. 注册
+ * 2. 登录
+ * 3. 密码修改
+ * 4. 断开连接
+ * @param {实例} socket
+ * @param {用户映射} userAliasMap
+ * @param {实例映射} socketMap
+ * @param {预处理语句} dataSql
+ */
 export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 	//注册
 	socket.on("register", (data) => {

@@ -26,13 +26,21 @@ const server = createIoServer(config.PORT, {
 // 在数据库连接代码前添加目录创建逻辑
 const dbPath = config.path;
 try {
-	fs.mkdirSync(dbPath, { recursive: true, mode: 0o755 });
-	logger.info(`数据库目录已创建：${dbPath}`);
+	// 添加目录存在判断
+	if (!fs.existsSync(dbPath)) {
+		fs.mkdirSync(dbPath, { recursive: true, mode: 0o755 });
+		logger.info(`数据库目录已创建：${dbPath}`);
+	}
 } catch (err) {
 	logger.error(`无法创建数据库目录：${err.message}`);
 	process.exit(1);
 }
-// 连接数据库
+
+// 添加单例检查
+if (!fs.existsSync(config.path + "user.db")) {
+	logger.info("首次创建数据库文件");
+}
+
 let db;
 try {
 	db = new Database(config.path + "user.db");
