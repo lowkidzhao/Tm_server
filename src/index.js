@@ -41,26 +41,35 @@ if (!fs.existsSync(config.path + "user.db")) {
 	logger.info("首次创建数据库文件");
 }
 
+// 修改数据库连接部分
 let db;
 try {
+	// 添加数据库文件锁检查
+	if (fs.existsSync(config.path + "user.db")) {
+		const fd = fs.openSync(config.path + "user.db", "r+");
+		fs.closeSync(fd);
+	}
+
 	db = new Database(config.path + "user.db");
 	logger.info("Connected to database-user.db successfully");
 
-	// 可选：执行初始化SQL
-	db.prepare(
-		`
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL,
-            password TEXT NOT NULL
-        )
-    `
-	).run();
+	// 添加数据库连接保活机制
+	setInterval(() => db.pragma("optimize"), 3600000); // 每小时优化数据库
 } catch (err) {
-	console.error("Database connection error:", err.message);
-	process.exit(1);
+	logger.error(`数据库连接失败: ${err.message}`);
+	process.exit(1); // 明确退出进程
 }
 
+// 可选：执行初始化SQL
+db.prepare(
+	`
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        password TEXT NOT NULL
+    )
+`
+).run();
 // 启动服务器
 Start(server, db);
