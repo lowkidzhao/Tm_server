@@ -19,6 +19,7 @@ export function createIoServer(port, config) {
 		// 合并配置并创建唯一的 Socket.IO 实例
 		const io = new Server(httpServer, config);
 		// 监听底层HTTP服务器事件
+		httpServer.listen(port);
 		io.httpServer.on("listening", () => {
 			logger.info(`服务已启动在端口:${io.httpServer.address().port}`);
 		});
