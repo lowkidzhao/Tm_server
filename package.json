@@ -5,7 +5,7 @@
   "main": "./src/index.js",
   "type": "module",
   "scripts": {
-    "start": "cross-env NODE_ENV=production pm2 start src/index.js --name tm_server --watch --",
+    "start": "cross-env NODE_ENV=production pm2 start src/index.js --name tm_server -i 1 --max-restarts 3 --no-autorestart --restart-delay 5000",
     "stop": "pm2 delete tm_server || true",
     "restart": "pnpm run stop && pnpm run start",
     "logs": "pm2 logs tm_server",
