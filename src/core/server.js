@@ -55,10 +55,6 @@ export function Start(io, db) {
 			socket.on("timeout", () => {
 				socket.disconnect();
 			});
-			// 心跳
-			socket.on("heartbeat", () => {
-				socket.emit("heartbeat");
-			});
 		});
 	} catch (err) {
 		logger.error("Socket.IO服务启动出错:", err);
