@@ -70,8 +70,8 @@ function compileTemplate(data) {
 export async function sendVerificationCode(email, code, minutes) {
 	try {
 		const html = await compileTemplate({
-			code: code,
-			minutes: minutes,
+			code: Number(code),
+			minutes: Number(minutes),
 		}).catch((err) => {
 			// 添加错误捕获
 			throw new Error(`模板编译失败: ${err.message}`);
