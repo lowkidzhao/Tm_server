@@ -12,7 +12,7 @@ export default (db) => ({
 	// 验证码插入语句
 	insertValid: db.prepare(`
 	    INSERT INTO verification (email, name, code, expires_at) 
-	    VALUES (:email, :name, :code, :expires_at)
+	    VALUES (:email, :name, :code, datetime('now', '+1 minutes'))
 	`),
 	// 验证码查询语句
 	getValid: db.prepare(`

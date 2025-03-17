@@ -66,7 +66,6 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 				email: data.email,
 				name: data.name,
 				code: code,
-				expires_at: new Date(Date.now() + 60000),
 			});
 
 			if (dbResult.changes === 1) {
