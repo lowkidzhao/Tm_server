@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import logger from "../log/logger.js";
 import ejs from "ejs";
 import path from "path";
+import { dirname } from "path";
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 dotenv.config();
 
