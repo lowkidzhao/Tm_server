@@ -70,8 +70,9 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 
 			if (dbResult.changes === 1) {
 				const mailResult = await sendVerificationCode(data.email, code, 1);
-				if (!mailResult.success) {
-					throw new Error(mailResult.error);
+				if (mailResult?.success !== true) {
+					// 使用可选链操作符
+					throw new Error(mailResult?.error || "邮件服务异常");
 				}
 				socket.emit("createValid", { message: "验证码发送成功" });
 			} else {

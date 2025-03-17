@@ -80,6 +80,7 @@ export async function sendVerificationCode(email, code, minutes) {
 		if (!result.result) {
 			throw new Error(`邮件发送失败: ${result.error}`);
 		}
+		return result;
 	} catch (error) {
 		logger.error(`验证码邮件发送失败: ${error.message}`, {
 			email,
@@ -87,6 +88,6 @@ export async function sendVerificationCode(email, code, minutes) {
 			error: error.stack,
 		});
 		// 返回错误信息供上层处理
-		return { success: false, error: error.message };
+		throw error;
 	}
 }
