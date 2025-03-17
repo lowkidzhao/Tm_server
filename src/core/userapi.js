@@ -134,17 +134,8 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 				socket.emit("changePassword", { error: "验证码错误或过期" });
 				return;
 			}
-			// 密码修改事件处理中
-			const name = userAliasMap.get(socket.id);
-			// 验证必须已登录
-			if (!name) {
-				socket.emit("changePassword", { error: "请先登录" });
-				return;
-			}
-
 			const updateResult = dataSql.updatePassword.run({
 				name: name,
-				oldPassword: oldPassword,
 				newPassword: newPassword,
 			});
 
@@ -155,7 +146,7 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 				});
 			} else {
 				socket.emit("changePassword", {
-					error: "旧密码错误或用户不存在",
+					error: "密码修改失败",
 				});
 			}
 		} catch (err) {

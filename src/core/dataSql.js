@@ -7,7 +7,7 @@ export default (db) => ({
 	updatePassword: db.prepare(`
         UPDATE users 
         SET password = :newPassword 
-        WHERE name = :name AND password = :oldPassword
+        WHERE name = :name
     `),
 	// 验证码插入语句
 	insertValid: db.prepare(`
