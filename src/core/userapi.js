@@ -1,21 +1,17 @@
 import logger from "../log/logger.js";
-
+import { generateNumericCode } from "../utitity/generateCode.js";
+import { sendVerificationCode } from "../utitity/email.js";
 /**
- * 用户api
- * 包括：
- * 1. 注册
- * 2. 登录
- * 3. 密码修改
- * 4. 断开连接
- * @param {实例} socket
- * @param {用户映射} userAliasMap
- * @param {实例映射} socketMap
- * @param {预处理语句} dataSql
+ * 用户认证相关 API 接口
+ * @param {Socket} socket - Socket 连接实例
+ * @param {Map<string, string>} userAliasMap - 用户名到 socket.id 的映射
+ * @param {Map<string, string>} socketMap - socket.id 到用户名的映射
+ * @param {Object} dataSql - 数据库操作对象
  */
 export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 	//注册
 	socket.on("register", (data) => {
-		const { name, email, password } = data;
+		const { name, email, password, code } = data;
 		// 校验逻辑
 		if (name.length > 20 || !/^[\w-]+$/.test(name)) {
 			throw new Error("用户名包含非法字符");
@@ -34,7 +30,13 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 			if (result.length > 0) {
 				socket.emit("register", { error: "用户名已存在" });
 				return;
-			} else {
+      } else {
+        //查询验证码
+        const result = dataSql.getValid.get({ email: email,name:name, code: code });
+        if (!result) {
+          socket.emit("register", { error: "验证码错误或过期" });
+          return;
+        }
 				// 插入新用户
 				let resultinsert = dataSql.insertUser.run({
 					name: name,
@@ -54,6 +56,21 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 		} catch (err) {
 			logger.error("注册出错:", err);
 			socket.emit("register", { error: "注册出错" });
+		}
+	});
+	// 验证码
+	socket.on("createValid", (data) => {
+		const code = generateNumericCode();
+    try {
+      const result = dataSql.insertValid.run({ email: data.email,name: data.name, code: data.code });
+      if (result.changes === 1) {
+        sendVerificationCode(data.email, code, 1).then((result) => {
+        	  socket.emit("createValid", { message: "验证码发送成功" });
+        }).catch((err) => {
+          logger.error("验证码发送失败:", err);
+          socket.emit("createValid", { error: "验证码发送失败" });	
+        })
+      }
 		}
 	});
 	// 登录
@@ -90,14 +107,23 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 	});
 	// 密码修改
 	socket.on("changePassword", (data) => {
-		const { oldPassword, newPassword } = data;
+		const { oldPassword, newPassword, code,name,email } = data;
 		try {
-			const name = userAliasMap.get(socket.id); // 获取当前socket.id对应的用户名
-			// 验证必须已登录
-			if (!name) {
-				socket.emit("changePassword", { error: "请先登录" });
-				return;
-			}
+      // 校验逻辑
+      if (newPassword.length < 6 || newPassword.length > 20) {
+        throw new Error("密码长度不符合要求");
+      }
+      const result = dataSql.getUser.get({ name: name });
+      if (!result) {
+        socket.emit("changePassword", { error: "用户名不存在" });
+        return;	
+      }
+      // 验证码
+      const result = dataSql.checkValid.get({ email: email, name: name, code: code });
+      if (!result) {
+        socket.emit("changePassword", { error: "验证码错误或过期" });
+        return;
+      }
 			// 执行密码更新
 			const result = dataSql.updatePassword.run({
 				name: name,

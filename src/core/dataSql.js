@@ -9,4 +9,18 @@ export default (db) => ({
         SET password = :newPassword 
         WHERE name = :name AND password = :oldPassword
     `),
+	// 验证码插入语句
+	insertValid: db.prepare(`
+	    INSERT INTO verification (email, name, code, expires_at) 
+	    VALUES (:email, :name, :code, datetime('now', '+1 minutes'))
+	`),
+	// 验证码查询语句
+	getValid: db.prepare(`
+	    SELECT * FROM verification WHERE email = :email AND name = :name AND code = :code
+	`),
+	// 自动清理过期验证码语句
+	cleanExpiredCodes: db.prepare(`
+	    DELETE FROM verification 
+	    WHERE expires_at < datetime('now')
+	`),
 });

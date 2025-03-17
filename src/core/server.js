@@ -6,11 +6,11 @@ import webrtcapi from "./webrtcapi.js";
 import userapi from "./userapi.js";
 import sqlFactory from "./dataSql.js";
 /**
- * 创建服务器
- * @param {服务器端口} port
- * @returns {服务器实例}
+ * 创建 Socket.IO 服务器实例
+ * @param {number} port - 服务器监听端口
+ * @param {Object} config - Socket.IO 配置项
+ * @returns {Server} Socket.IO 服务器实例
  */
-// 在createServer函数中添加路径处理
 export function createIoServer(port, config) {
 	try {
 		const app = new express();
@@ -35,15 +35,16 @@ export function createIoServer(port, config) {
 }
 
 /**
- * 载入监听服务
- * @param {服务器实例} io
+ * 初始化 Socket.IO 事件监听
+ * @param {Server} io - Socket.IO 服务器实例
+ * @param {Database} db - 数据库连接实例
  */
 export function Start(io, db) {
 	try {
-		const dataSql = sqlFactory(db); // 传入数据库实例
-		// 存储用户映射关系
-		const userAliasMap = new Map(); // name -> socket.id
-		const socketMap = new Map(); // socket.id -> name
+		const dataSql = sqlFactory(db);
+		// 存储用户映射关系（name <-> socket.id）
+		const userAliasMap = new Map();
+		const socketMap = new Map();
 
 		io.on("connection", (socket) => {
 			socket.emit("message", "Hello from Socket.IO!");
@@ -51,6 +52,12 @@ export function Start(io, db) {
 			userapi(socket, userAliasMap, socketMap, dataSql);
 			// 调用webrtcapi
 			webrtcapi(socket, userAliasMap);
+
+			// 定时清理过期验证码
+			setInterval(() => {
+				const deleted = dataSql.cleanExpiredCodes.run();
+				logger.info(`清理过期验证码，删除${deleted.changes}条记录`);
+			}, 1 * 60 * 1000); // 每5分钟清理一次
 
 			socket.on("timeout", () => {
 				socket.disconnect();

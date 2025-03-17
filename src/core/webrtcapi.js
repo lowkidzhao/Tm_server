@@ -1,14 +1,9 @@
 import logger from "../log/logger.js";
 
 /**
- *  webrtcapi
- *  用于处理webrtc相关的事件
- *  包括：
- *  1. offer
- *  2. answer
- *  3. icecandidate
- * @param {socket实例} socket
- * @param {用户映射} userAliasMap
+ * webrtc API 接口
+ * @param {Socket} socket - Socket 连接实例
+ * @param {Map<string, string>} userAliasMap - 用户名到 socket.id 的映射
  */
 export default function webrtcapi(socket, userAliasMap) {
 	// 监听webrtc-offer事件（offer）

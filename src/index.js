@@ -37,7 +37,7 @@ try {
 }
 
 // 添加单例检查
-if (!fs.existsSync(config.path + "user.db")) {
+if (!fs.existsSync(config.path + "TMserver.db")) {
 	logger.info("首次创建数据库文件");
 }
 
@@ -45,13 +45,13 @@ if (!fs.existsSync(config.path + "user.db")) {
 let db;
 try {
 	// 添加数据库文件锁检查
-	if (fs.existsSync(config.path + "user.db")) {
-		const fd = fs.openSync(config.path + "user.db", "r+");
+	if (fs.existsSync(config.path + "TMserver.db")) {
+		const fd = fs.openSync(config.path + "TMserver.db", "r+");
 		fs.closeSync(fd);
 	}
 
-	db = new Database(config.path + "user.db");
-	logger.info("Connected to database-user.db successfully");
+	db = new Database(config.path + "TMserver.db");
+	logger.info("Connected to TMserver.db successfully");
 
 	// 添加数据库连接保活机制
 	setInterval(() => db.pragma("optimize"), 3600000); // 每小时优化数据库
@@ -60,7 +60,8 @@ try {
 	process.exit(1); // 明确退出进程
 }
 
-// 可选：执行初始化SQL
+// 执行初始化SQL
+// 用户表
 db.prepare(
 	`
     CREATE TABLE IF NOT EXISTS users (
@@ -68,6 +69,20 @@ db.prepare(
         name TEXT NOT NULL,
         email TEXT NOT NULL,
         password TEXT NOT NULL
+    )
+`
+).run();
+
+// 验证码存储表
+db.prepare(
+	`
+    CREATE TABLE IF NOT EXISTS verification (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT NOT NULL,
+        name TEXT NOT NULL,
+        code TEXT NOT NULL,
+        time TEXT NOT NULL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
 `
 ).run();
