@@ -53,7 +53,7 @@ async function sendEmail({ to, subject, text, html, attachments = [] }) {
  */
 function compileTemplate(data) {
 	return ejs.renderFile(
-		path.join(process.cwd(), "src/utitity/valid.html"),
+		path.join(__dirname, "valid.html"), // 修正为使用绝对路径
 		data
 	);
 }
@@ -69,6 +69,9 @@ export async function sendVerificationCode(email, code, minutes) {
 		const html = await compileTemplate({
 			code: code,
 			minutes: minutes,
+		}).catch((err) => {
+			// 添加错误捕获
+			throw new Error(`模板编译失败: ${err.message}`);
 		});
 
 		const { success, error } = await sendEmail({
