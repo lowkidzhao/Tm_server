@@ -81,7 +81,7 @@ db.prepare(
         email TEXT NOT NULL,
         name TEXT NOT NULL,
         code TEXT NOT NULL,
-        time TEXT NOT NULL,
+        expires_at TEXT NOT NULL,  // 添加过期时间字段
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
 `
