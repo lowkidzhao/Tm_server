@@ -144,13 +144,13 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 				return;
 			}
 			// 执行密码更新
-			const result = dataSql.updatePassword.run({
+			const updateResult = dataSql.updatePassword.run({
 				name: name,
 				oldPassword: oldPassword,
 				newPassword: newPassword,
 			});
 			// 错误处理
-			if (result.changes === 1) {
+			if (updateResult.changes === 1) {
 				socket.emit("changePassword", {
 					message: "密码修改成功",
 				});

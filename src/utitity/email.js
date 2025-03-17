@@ -64,7 +64,7 @@ function compileTemplate(data) {
  * @param {string} code - 验证码
  * @param {number} minutes - 验证码有效期（分钟）
  */
-async function sendVerificationCode(email, code, minutes) {
+export async function sendVerificationCode(email, code, minutes) {
 	try {
 		const html = await compileTemplate({
 			code: code,
