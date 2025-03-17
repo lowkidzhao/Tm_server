@@ -64,12 +64,29 @@ function compileTemplate(data) {
  * @param {string} code - 验证码
  * @param {number} minutes - 验证码有效期（分钟）
  */
-export async function sendVerificationCode(email, code, minutes) {
+async function sendVerificationCode(email, code, minutes) {
 	try {
-		const html = await compileTemplate({ code, minutes });
-		const result = await sendEmail({ to: email, subject: "验证码通知", html });
-		return result;
+		const html = await compileTemplate({
+			code: code,
+			minutes: minutes,
+		});
+
+		const result = await sendEmail({
+			to: email,
+			subject: "验证码通知",
+			html,
+		});
+
+		if (!result.result) {
+			throw new Error(`邮件发送失败: ${result.error}`);
+		}
 	} catch (error) {
-		logger.error("发送验证码邮件失败:", error);
+		logger.error(`验证码邮件发送失败: ${error.message}`, {
+			email,
+			code,
+			error: error.stack,
+		});
+		// 返回错误信息供上层处理
+		return { success: false, error: error.message };
 	}
 }

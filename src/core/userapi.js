@@ -30,13 +30,17 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 			if (result.length > 0) {
 				socket.emit("register", { error: "用户名已存在" });
 				return;
-      } else {
-        //查询验证码
-        const result = dataSql.getValid.get({ email: email,name:name, code: code });
-        if (!result) {
-          socket.emit("register", { error: "验证码错误或过期" });
-          return;
-        }
+			} else {
+				//查询验证码
+				const result = dataSql.getValid.get({
+					email: email,
+					name: name,
+					code: code,
+				});
+				if (!result) {
+					socket.emit("register", { error: "验证码错误或过期" });
+					return;
+				}
 				// 插入新用户
 				let resultinsert = dataSql.insertUser.run({
 					name: name,
@@ -59,18 +63,29 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 		}
 	});
 	// 验证码
-	socket.on("createValid", (data) => {
+	// 在 createValid 事件处理中
+	socket.on("createValid", async (data) => {
 		const code = generateNumericCode();
-    try {
-      const result = dataSql.insertValid.run({ email: data.email,name: data.name, code: data.code });
-      if (result.changes === 1) {
-        sendVerificationCode(data.email, code, 1).then((result) => {
-        	  socket.emit("createValid", { message: "验证码发送成功" });
-        }).catch((err) => {
-          logger.error("验证码发送失败:", err);
-          socket.emit("createValid", { error: "验证码发送失败" });	
-        })
-      }
+		try {
+			const dbResult = dataSql.insertValid.run({
+				email: data.email,
+				name: data.name,
+				code: code,
+			});
+
+			if (dbResult.changes === 1) {
+				const mailResult = await sendVerificationCode(data.email, code, 1);
+				if (!mailResult.success) {
+					throw new Error(mailResult.error);
+				}
+				socket.emit("createValid", { message: "验证码发送成功" });
+			}
+		} catch (err) {
+			logger.error("验证码处理失败:", {
+				error: err.stack,
+				data,
+			});
+			socket.emit("createValid", { error: err.message });
 		}
 	});
 	// 登录
@@ -107,23 +122,27 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 	});
 	// 密码修改
 	socket.on("changePassword", (data) => {
-		const { oldPassword, newPassword, code,name,email } = data;
+		const { oldPassword, newPassword, code, name, email } = data;
 		try {
-      // 校验逻辑
-      if (newPassword.length < 6 || newPassword.length > 20) {
-        throw new Error("密码长度不符合要求");
-      }
-      const result = dataSql.getUser.get({ name: name });
-      if (!result) {
-        socket.emit("changePassword", { error: "用户名不存在" });
-        return;	
-      }
-      // 验证码
-      const result = dataSql.checkValid.get({ email: email, name: name, code: code });
-      if (!result) {
-        socket.emit("changePassword", { error: "验证码错误或过期" });
-        return;
-      }
+			// 校验逻辑
+			if (newPassword.length < 6 || newPassword.length > 20) {
+				throw new Error("密码长度不符合要求");
+			}
+			const result = dataSql.getUser.get({ name: name });
+			if (!result) {
+				socket.emit("changePassword", { error: "用户名不存在" });
+				return;
+			}
+			// 验证码
+			const result = dataSql.checkValid.get({
+				email: email,
+				name: name,
+				code: code,
+			});
+			if (!result) {
+				socket.emit("changePassword", { error: "验证码错误或过期" });
+				return;
+			}
 			// 执行密码更新
 			const result = dataSql.updatePassword.run({
 				name: name,
