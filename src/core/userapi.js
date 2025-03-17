@@ -134,12 +134,12 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 				return;
 			}
 			// 验证码
-			const result = dataSql.checkValid.get({
+			const validResult = dataSql.checkValid.get({
 				email: email,
 				name: name,
 				code: code,
 			});
-			if (!result) {
+			if (!validResult) {
 				socket.emit("changePassword", { error: "验证码错误或过期" });
 				return;
 			}
