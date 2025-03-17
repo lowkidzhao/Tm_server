@@ -32,12 +32,12 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 				return;
 			} else {
 				//查询验证码
-				const result = dataSql.getValid.get({
+				const validresult = dataSql.getValid.get({
 					email: email,
 					name: name,
 					code: code,
 				});
-				if (!result) {
+				if (!validresult) {
 					socket.emit("register", { error: "验证码错误或过期" });
 					return;
 				}
