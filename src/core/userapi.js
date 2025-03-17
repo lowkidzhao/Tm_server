@@ -53,15 +53,20 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 			socket.emit("register", { error: "注册出错" });
 		}
 	});
-	// 验证码
-	// 在 createValid 事件处理中
+	// 验证码发送
 	socket.on("createValid", async (data) => {
 		const code = generateNumericCode();
 		try {
+			// 添加字段验证
+			if (!data.email || !data.name) {
+				throw new Error("邮箱和用户名不能为空");
+			}
+
 			const dbResult = dataSql.insertValid.run({
 				email: data.email,
 				name: data.name,
 				code: code,
+				expires_at: new Date(Date.now() + 60000),
 			});
 
 			if (dbResult.changes === 1) {
@@ -70,6 +75,8 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 					throw new Error(mailResult.error);
 				}
 				socket.emit("createValid", { message: "验证码发送成功" });
+			} else {
+				logger.error("验证码插入失败:", { data, dbResult });
 			}
 		} catch (err) {
 			logger.error("验证码处理失败:", {
