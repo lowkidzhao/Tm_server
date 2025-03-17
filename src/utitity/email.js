@@ -37,10 +37,10 @@ async function sendEmail({ to, subject, text, html, attachments = [] }) {
 			attachments,
 		});
 
-		return { result: true, messageId: info.messageId };
+		return { success: true, messageId: info.messageId };
 	} catch (error) {
 		logger.error("邮件发送失败:", error);
-		return { result: false, error: error.message };
+		return { success: false, error: error.message };
 	}
 }
 
@@ -71,23 +71,18 @@ export async function sendVerificationCode(email, code, minutes) {
 			minutes: minutes,
 		});
 
-		const result = await sendEmail({
+		const { success, error } = await sendEmail({
 			to: email,
 			subject: "验证码通知",
 			html,
 		});
 
-		if (!result.result) {
-			throw new Error(`邮件发送失败: ${result.error}`);
+		if (!success) {
+			throw new Error(error || "未知邮件服务错误");
 		}
-		return result;
+		return { success: true };
 	} catch (error) {
-		logger.error(`验证码邮件发送失败: ${error.message}`, {
-			email,
-			code,
-			error: error.stack,
-		});
-		// 返回错误信息供上层处理
+		logger.error(`验证码邮件发送失败: ${error.message}`);
 		throw error;
 	}
 }
