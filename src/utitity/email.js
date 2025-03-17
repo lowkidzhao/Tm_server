@@ -55,10 +55,7 @@ async function sendEmail({ to, subject, text, html, attachments = [] }) {
  * @returns {Promise<string>} 渲染后的HTML内容
  */
 function compileTemplate(data) {
-	return ejs.renderFile(
-		path.join(__dirname, "valid.html"), // 修正为使用绝对路径
-		data
-	);
+	return ejs.renderFile(path.join(__dirname, "valid.html"), data);
 }
 
 /**
