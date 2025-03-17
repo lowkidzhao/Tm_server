@@ -65,13 +65,13 @@ function compileTemplate(data) {
  * 发送验证码邮件示例
  * @param {string} email - 收件人邮箱
  * @param {string} code - 验证码
- * @param {number} minutes - 验证码有效期（分钟）
+ * @param {number} time - 验证码有效期（分钟）
  */
-export async function sendVerificationCode(email, code, minutes) {
+export async function sendVerificationCode(email, code, time) {
 	try {
 		const html = await compileTemplate({
 			code: Number(code),
-			minutes: Number(minutes),
+			minutes: Number(time),
 		}).catch((err) => {
 			// 添加错误捕获
 			throw new Error(`模板编译失败: ${err.message}`);

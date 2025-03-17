@@ -69,7 +69,8 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 			});
 
 			if (dbResult.changes === 1) {
-				await sendVerificationCode(data.email, code, 1);
+				const EXPIRE_MINUTES = 1; // 建议改为从配置读取
+				await sendVerificationCode(data.email, code, EXPIRE_MINUTES);
 				socket.emit("createValid", {
 					message: "验证码发送成功",
 				});
