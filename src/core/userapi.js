@@ -25,22 +25,13 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 		if (password.length < 6 || password.length > 20) {
 			throw new Error("密码长度不符合要求");
 		}
+		// 注册事件处理中
 		try {
-			const result = dataSql.checkName.all({ name: name });
-			if (result.length > 0) {
+			const nameCheckResult = dataSql.checkName.all({ name: name });
+			if (nameCheckResult.length > 0) {
 				socket.emit("register", { error: "用户名已存在" });
 				return;
 			} else {
-				//查询验证码
-				const validresult = dataSql.getValid.get({
-					email: email,
-					name: name,
-					code: code,
-				});
-				if (!validresult) {
-					socket.emit("register", { error: "验证码错误或过期" });
-					return;
-				}
 				// 插入新用户
 				let resultinsert = dataSql.insertUser.run({
 					name: name,
@@ -143,21 +134,31 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 				socket.emit("changePassword", { error: "验证码错误或过期" });
 				return;
 			}
-			// 执行密码更新
-			const updateResult = dataSql.updatePassword.run({
-				name: name,
-				oldPassword: oldPassword,
-				newPassword: newPassword,
-			});
-			// 错误处理
-			if (updateResult.changes === 1) {
-				socket.emit("changePassword", {
-					message: "密码修改成功",
+			// 密码修改事件处理中
+			try {
+				const name = userAliasMap.get(socket.id);
+				// 验证必须已登录
+				if (!name) {
+					socket.emit("changePassword", { error: "请先登录" });
+					return;
+				}
+				
+				const updateResult = dataSql.updatePassword.run({
+					name: name,
+					oldPassword: oldPassword,
+					newPassword: newPassword,
 				});
-			} else {
-				socket.emit("changePassword", {
-					error: "旧密码错误或用户不存在",
-				});
+				
+				// 错误处理
+				if (updateResult.changes === 1) {
+					socket.emit("changePassword", {
+						message: "密码修改成功",
+					});
+				} else {
+					socket.emit("changePassword", {
+						error: "旧密码错误或用户不存在",
+					});
+				}
 			}
 		} catch (err) {
 			logger.error("密码修改出错:", err);
