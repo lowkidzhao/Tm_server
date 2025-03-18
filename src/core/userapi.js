@@ -28,8 +28,8 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 				return;
 			}
 			// 校验密码长度
-			if (password.length < 6 || password.length > 20) {
-				socket.emit("register", { error: "密码长度需在6-20个字符之间" });
+			if (password.length < 8 || password.length > 20) {
+				socket.emit("register", { error: "密码长度需在8-20个字符之间" });
 				return;
 			}
 			const nameCheckResult = dataSql.checkName.all({ name: name });
@@ -39,7 +39,7 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 				return;
 			} else {
 				// 验证码
-				const validResult = dataSql.checkValid.get({
+				const validResult = dataSql.getValid.get({
 					email: email,
 					name: name,
 					code: code,
@@ -142,7 +142,7 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 				return;
 			}
 			// 验证码
-			const validResult = dataSql.checkValid.get({
+			const validResult = dataSql.getValid.get({
 				email: email,
 				name: name,
 				code: code,
