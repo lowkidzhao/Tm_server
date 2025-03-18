@@ -15,17 +15,22 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 		// 注册事件处理中
 		try {
 			// 校验逻辑
-			if (name.length > 20 || !/^[\w-]+$/.test(name)) {
-				throw new Error("用户名包含非法字符");
+			if (name.length > 20 || !/^[\u4e00-\u9fa5\w-]+$/.test(name)) {
+				socket.emit("register", {
+					error: "用户名包含非法字符（仅支持中文、字母、数字、下划线和连字符）",
+				});
+				return;
 			}
 			// 校验邮箱格式
 			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 			if (!emailRegex.test(email)) {
-				throw new Error("邮箱格式不正确");
+				socket.emit("register", { error: "邮箱格式不正确" });
+				return;
 			}
 			// 校验密码长度
 			if (password.length < 6 || password.length > 20) {
-				throw new Error("密码长度不符合要求");
+				socket.emit("register", { error: "密码长度需在6-20个字符之间" });
+				return;
 			}
 			const nameCheckResult = dataSql.checkName.all({ name: name });
 
