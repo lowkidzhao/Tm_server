@@ -11,6 +11,11 @@ import { sendVerificationCode } from "../utitity/email.js";
 export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 	//注册
 	socket.on("register", (data) => {
+		// 新增空数据校验
+		if (!data || typeof data !== "object") {
+			socket.emit("register", { error: "无效的请求格式" });
+			return;
+		}
 		const { name, email, password, code } = data;
 		// 注册事件处理中
 		try {
@@ -137,6 +142,11 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 	});
 	// 密码修改
 	socket.on("changePassword", (data) => {
+		// 新增空数据校验
+		if (!data || typeof data !== "object") {
+			socket.emit("register", { error: "无效的请求格式" });
+			return;
+		}
 		const { oldPassword, newPassword, code, name, email } = data;
 		try {
 			// 校验逻辑
