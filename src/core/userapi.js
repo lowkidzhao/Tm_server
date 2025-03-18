@@ -12,26 +12,37 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 	//注册
 	socket.on("register", (data) => {
 		const { name, email, password, code } = data;
-		// 校验逻辑
-		if (name.length > 20 || !/^[\w-]+$/.test(name)) {
-			throw new Error("用户名包含非法字符");
-		}
-		// 校验邮箱格式
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!emailRegex.test(email)) {
-			throw new Error("邮箱格式不正确");
-		}
-		// 校验密码长度
-		if (password.length < 6 || password.length > 20) {
-			throw new Error("密码长度不符合要求");
-		}
 		// 注册事件处理中
 		try {
+			// 校验逻辑
+			if (name.length > 20 || !/^[\w-]+$/.test(name)) {
+				throw new Error("用户名包含非法字符");
+			}
+			// 校验邮箱格式
+			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			if (!emailRegex.test(email)) {
+				throw new Error("邮箱格式不正确");
+			}
+			// 校验密码长度
+			if (password.length < 6 || password.length > 20) {
+				throw new Error("密码长度不符合要求");
+			}
 			const nameCheckResult = dataSql.checkName.all({ name: name });
+
 			if (nameCheckResult.length > 0) {
 				socket.emit("register", { error: "用户名已存在" });
 				return;
 			} else {
+				// 验证码
+				const validResult = dataSql.checkValid.get({
+					email: email,
+					name: name,
+					code: code,
+				});
+				if (!validResult) {
+					socket.emit("changePassword", { error: "验证码错误或过期" });
+					return;
+				}
 				// 插入新用户
 				let resultinsert = dataSql.insertUser.run({
 					name: name,
@@ -39,10 +50,7 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 					password: password,
 				});
 				if (resultinsert.changes === 1) {
-					socket.emit("register", {
-						message: "注册成功",
-						userAlias: name,
-					});
+					socket.emit("register", { message: "注册成功" });
 				} else {
 					socket.emit("register", { error: "注册失败" });
 				}
