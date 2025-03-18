@@ -56,7 +56,6 @@ export function Start(io, db) {
 			// 定时清理过期验证码
 			setInterval(() => {
 				const deleted = dataSql.cleanExpiredCodes.run();
-				logger.info(`清理过期验证码，删除${deleted.changes}条记录`);
 			}, 1 * 60 * 1000); // 每5分钟清理一次
 
 			socket.on("timeout", () => {
