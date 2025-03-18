@@ -71,13 +71,20 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 		const code = generateNumericCode();
 		try {
 			// 添加字段验证
+			if (!data) {
+				throw new Error("请求数据不能为空");
+			}
 			if (!data.email || !data.name) {
 				throw new Error("邮箱和用户名不能为空");
 			}
-
+			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			if (!emailRegex.test(email)) {
+				throw new Error("邮箱格式不正确");
+			}
+			const { name = "", email = "", password = "", code = "" } = data || {};
 			const dbResult = dataSql.insertValid.run({
-				email: data.email,
-				name: data.name,
+				email: email,
+				name: name,
 				code: code,
 			});
 
