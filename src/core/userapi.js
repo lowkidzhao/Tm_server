@@ -15,9 +15,9 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 		// 注册事件处理中
 		try {
 			// 校验逻辑
-			if (name.length > 20 || !/^[\w-]+$/.test(name)) {
+			if (name.length > 20 || name.length == 0) {
 				socket.emit("register", {
-					error: "用户名包含非法字符（仅支持中文、字母、数字、下划线和连字符）",
+					error: " 用户名在1个字符与20个字符之间",
 				});
 				return;
 			}
