@@ -45,7 +45,7 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 					code: code,
 				});
 				if (!validResult) {
-					socket.emit("changePassword", { error: "验证码错误或过期" });
+					socket.emit("register", { error: "验证码错误或过期" });
 					return;
 				}
 				// 插入新用户
