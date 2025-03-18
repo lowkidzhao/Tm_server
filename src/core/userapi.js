@@ -87,6 +87,11 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 			if (!emailRegex.test(email)) {
 				throw new Error("邮箱格式不正确");
 			}
+			const check = dataSql.checkValid.all({ email: email });
+			if (check.length > 0) {
+				socket.emit("createValid", { error: "验证码频繁" });
+				return;
+			}
 			const dbResult = dataSql.insertValid.run({
 				email: email,
 				name: name,

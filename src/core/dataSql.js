@@ -18,6 +18,10 @@ export default (db) => ({
 	getValid: db.prepare(`
 	    SELECT * FROM verification WHERE email = :email AND name = :name AND code = :code
 	`),
+	// 验证码时效性
+	checkValid: db.prepare(`
+	    SELECT * FROM verification WHERE email = :email
+	`),
 	// 自动清理过期验证码语句
 	cleanExpiredCodes: db.prepare(`
 	    DELETE FROM verification 
