@@ -27,4 +27,27 @@ export default (db) => ({
 	    DELETE FROM verification 
 	    WHERE expires_at < datetime('now')
 	`),
+	// 获取所有用户信息
+	getAllUsers: db.prepare(`SELECT * FROM users`),
+	//获取所有房间信息
+	getAllRooms: db.prepare(`SELECT * FROM rooms`),
+	//检测重名房间
+	checkRoomName: db.prepare(`SELECT * FROM rooms WHERE name = :name`),
+	//创建房间
+	createRoom: db.prepare(
+		`INSERT INTO rooms (name, password) VALUES (:name, COALESCE(:password, ''))`
+	),
+	//删除房间
+	deleteRoom: db.prepare(`DELETE FROM rooms WHERE name = :name`),
+	//获取指定房间
+	getRoom: db.prepare(`SELECT * FROM rooms WHERE name = :name`),
+	//使用id
+	getRoomById: db.prepare(`SELECT * FROM rooms WHERE id = :id`),
+	//聊天
+	insertMessage: db.prepare(`
+    INSERT INTO messages (room_id, user_id, message, timestamp) VALUES (:room_id, :user_id, :message, datetime('now'))
+  `),
+	getMessages: db.prepare(`
+    SELECT * FROM messages WHERE room_id = :room_id ORDER BY timestamp DESC LIMIT 100
+  `),
 });

@@ -31,6 +31,7 @@
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
+    "@electron-toolkit/eslint-config": "^2.0.0",
     "cross-env": "^7.0.3"
   },
   "pnpm": {

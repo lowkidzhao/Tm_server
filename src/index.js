@@ -86,5 +86,27 @@ db.prepare(
     )
 `
 ).run();
+// 房间存储表
+db.prepare(
+	`
+    CREATE TABLE IF NOT EXISTS rooms (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        password TEXT,
+    )
+`
+).run();
+// 消息存储表
+db.prepare(
+	`
+    CREATE TABLE IF NOT EXISTS messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        room_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        message TEXT NOT NULL,
+        timestamp TEXT NOT NULL,
+    )   
+`
+).run();
 // 启动服务器
 Start(server, db);

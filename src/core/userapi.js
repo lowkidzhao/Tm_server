@@ -115,6 +115,10 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 	});
 	// 登录
 	socket.on("login", (data) => {
+		if (data === null || data === undefined) {
+			socket.emit("login", { error: "无效的请求格式" });
+			return;
+		}
 		const { name, password } = data;
 		try {
 			const user = dataSql.getUser.get({ name: name });

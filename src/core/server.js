@@ -5,6 +5,8 @@ import logger from "../log/logger.js";
 import webrtcapi from "./webrtcapi.js";
 import userapi from "./userapi.js";
 import sqlFactory from "./dataSql.js";
+import main from "./main.js";
+import room from "./room.js";
 /**
  * 创建 Socket.IO 服务器实例
  * @param {number} port - 服务器监听端口
@@ -52,16 +54,27 @@ export function Start(io, db) {
 			userapi(socket, userAliasMap, socketMap, dataSql);
 			// 调用webrtcapi
 			webrtcapi(socket, userAliasMap);
-
-			// 定时清理过期验证码
-			setInterval(() => {
-				const deleted = dataSql.cleanExpiredCodes.run();
-			}, 1 * 60 * 1000); // 每1分钟清理一次
-
+			// 调用main
+			main(socket, userAliasMap, socketMap, dataSql);
+			// 调用room
+			room(socket, userAliasMap, socketMap, dataSql);
+			// 超时处理
+			socket.setTimeout(10 * 60 * 1000); // 设置超时时间为10分钟
 			socket.on("timeout", () => {
 				socket.disconnect();
 			});
 		});
+
+		// 在线用户广播定时器（单个实例）
+		setInterval(() => {
+			const onlineUsers = Array.from(userAliasMap.keys());
+			io.emit("onlineUsers", onlineUsers); // 改用 io 广播
+		}, 1 * 60 * 1000);
+
+		// 定时清理过期验证码
+		setInterval(() => {
+			const deleted = dataSql.cleanExpiredCodes.run();
+		}, 1 * 60 * 1000); // 每1分钟清理一次
 	} catch (err) {
 		logger.error("Socket.IO服务启动出错:", err);
 	}
