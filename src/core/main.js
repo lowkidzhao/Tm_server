@@ -9,7 +9,7 @@ import logger from "../log/logger.js";
 export default function main(socket, userAliasMap, socketMap, dataSql) {
 	socket.on("getAll", (data) => {
 		try {
-			const all = dataSql.getAll.all();
+			const all = dataSql.getAllUsers.all();
 			if (!all) {
 				socket.emit("getAll", []);
 				return;
