@@ -64,7 +64,7 @@ export function Start(io, db) {
 		setInterval(() => {
 			const onlineUsers = Array.from(userAliasMap.keys());
 			io.emit("onlineUsers", onlineUsers); // 改用 io 广播
-		}, 1 * 60 * 1000);
+		}, 1 * 15 * 1000);
 
 		// 定时清理过期验证码
 		setInterval(() => {
