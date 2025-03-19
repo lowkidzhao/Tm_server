@@ -153,7 +153,7 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 	socket.on("changePassword", (data) => {
 		// 新增空数据校验
 		if (!data || typeof data !== "object") {
-			socket.emit("register", { error: "无效的请求格式" });
+			socket.emit("changePassword", { error: "无效的请求格式" });
 			return;
 		}
 		const { oldPassword, newPassword, code, name, email } = data;

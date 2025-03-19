@@ -92,7 +92,7 @@ db.prepare(
     CREATE TABLE IF NOT EXISTS rooms (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        password TEXT,
+        password TEXT
     )
 `
 ).run();
@@ -104,7 +104,7 @@ db.prepare(
         room_id INTEGER NOT NULL,
         user_id INTEGER NOT NULL,
         message TEXT NOT NULL,
-        timestamp TEXT NOT NULL,
+        timestamp TEXT NOT NULL
     )   
 `
 ).run();
