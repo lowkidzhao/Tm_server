@@ -58,11 +58,6 @@ export function Start(io, db) {
 			main(socket, userAliasMap, socketMap, dataSql);
 			// 调用room
 			room(socket, userAliasMap, socketMap, dataSql);
-			// 超时处理
-			socket.setTimeout(10 * 60 * 1000); // 设置超时时间为10分钟
-			socket.on("timeout", () => {
-				socket.disconnect();
-			});
 		});
 
 		// 在线用户广播定时器（单个实例）
