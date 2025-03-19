@@ -10,6 +10,10 @@ export default function main(socket, userAliasMap, socketMap, dataSql) {
 	socket.on("getAll", (data) => {
 		try {
 			const all = dataSql.getAll.all();
+			if (!all) {
+				socket.emit("getAll", []);
+				return;
+			}
 			// 映射为仅包含 name 字段的数组
 			const nameArray = all.map((item) => item.name);
 			socket.emit("getAll", nameArray);
