@@ -27,7 +27,7 @@ export default function main(socket, userAliasMap, socketMap, dataSql) {
 	socket.on("onlineUsers", (data) => {
 		try {
 			const onlineUsers = Array.from(userAliasMap.keys());
-			io.emit("onlineUsers", onlineUsers); // 改用 io 广播
+			socket.emit("onlineUsers", onlineUsers); // 改用 io 广播
 		} catch (err) {
 			logger.error("获取在线用户失败:", err);
 			socket.emit("onlineUsers", { error: "获取在线用户失败" });
