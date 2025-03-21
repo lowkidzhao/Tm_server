@@ -57,7 +57,7 @@ export function Start(io, db) {
 			// 调用main
 			main(socket, userAliasMap, socketMap, dataSql);
 			// 调用room
-			room(socket, userAliasMap, socketMap, dataSql);
+			room(socket, userAliasMap, socketMap, dataSql, io);
 		});
 
 		// 在线用户广播定时器（单个实例）

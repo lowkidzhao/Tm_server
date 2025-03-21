@@ -6,7 +6,7 @@ import logger from "../log/logger.js";
  * @param {Map<string, string>} socketMap - socket.id 到用户名的映射
  * @param {Object} dataSql - 数据库操作对象
  */
-export default function main(socket, userAliasMap, socketMap, dataSql) {
+export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 	// 创建房间
 	socket.on("newroom", (data) => {
 		try {
