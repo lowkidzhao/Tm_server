@@ -89,11 +89,12 @@ export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 				(room) => room !== socket.id
 			); // 排除 socket 自动加入的私有房间
 			if (joinedRooms.length > 0) {
-				joinedRooms.forEach((room) => {
-					socket.leave(room);
-					io.to(roomId).emit("user_left", {
+				joinedRooms.forEach((roomToLeave) => {
+					socket.leave(roomToLeave);
+					io.to(roomToLeave).emit("user_left", {
+						// 使用正确的房间ID变量
 						success: socketMap.get(socket.id),
-					}); // 广播给房间成员name
+					});
 				});
 			}
 			// 使用 Socket.IO 原生房间功能
