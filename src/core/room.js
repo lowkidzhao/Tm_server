@@ -53,9 +53,9 @@ export default function main(socket, userAliasMap, socketMap, dataSql) {
 		}
 	});
 	//获取所有房间
-	socket.on("getAllroom", (data) => {
+	socket.on("getAllroom", () => {
 		try {
-			const all = dataSql.getAllroom.all(); // 执行数据库操作
+			const all = dataSql.getAllRooms.all(); // 执行数据库操作
 			if (!all) {
 				socket.emit("getAllroom", { error: "房间不存在" }); // 发送错误消息给客户端
 				return; // 终止函数执行
@@ -124,6 +124,7 @@ export default function main(socket, userAliasMap, socketMap, dataSql) {
 			}
 		} catch (err) {
 			logger.error("离开房间失败:", err);
+			socket.emit("leaveroom", { error: "离开房间失败" }); // 发送错误消息给客户端
 		}
 	});
 	//信息广播
@@ -141,7 +142,7 @@ export default function main(socket, userAliasMap, socketMap, dataSql) {
 			const name = socketMap.get(socket.id);
 			if (joinedRooms.length > 0) {
 				joinedRooms.forEach((room) => {
-					io.to(room).emit("message", {
+					io.to(room).emit("newmessage", {
 						message: message,
 						name: name,
 						time,
@@ -158,6 +159,7 @@ export default function main(socket, userAliasMap, socketMap, dataSql) {
 					if (result.changes > 0) {
 						// 检查是否成功插入
 						logger.info("消息插入成功"); // 记录成功日志
+						socket.emit("message", { success: "消息发送成功" }); // 发送成功消息给客户端
 					} else {
 						logger.error("消息插入失败"); // 记录错误日志
 					}
@@ -204,6 +206,29 @@ export default function main(socket, userAliasMap, socketMap, dataSql) {
 		} catch (err) {
 			logger.error("查看当前房间失败:", err); // 记录错误日志
 			socket.emit("getCurrentRoom", { error: "查看当前房间失败" }); // 发送错误消息给客户端
+		}
+	});
+	//获取指定房间人数
+	socket.on("getRoomUsers", (data) => {
+		try {
+			if (!data) {
+				socket.emit("getRoomUsers", { error: "房间名不能为空" }); // 发送错误消息给客户端
+				return; // 终止函数执行
+			}
+			const roomId = data.room;
+			const room = io.sockets.adapter.rooms.get(roomId);
+			if (!room) {
+				socket.emit("getRoomUsers", { error: "房间不存在" }); // 发送错误消息给客户端
+				return; // 终止函数执行
+			}
+			const users = Array.from(room).map((socketId) => ({
+				socketId,
+				username: userAliasMap.get(socketId),
+			}));
+			socket.emit("getRoomUsers", { success: users }); // 发送成功消息给客户端
+		} catch (err) {
+			logger.error("获取房间用户失败:", err); // 记录错误日志
+			socket.emit("getRoomUsers", { error: "获取房间用户失败" }); // 发送错误消息给客户端
 		}
 	});
 }
