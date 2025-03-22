@@ -121,6 +121,8 @@ export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 						success: socketMap.get(socket.id),
 					}); // 广播给房间成员name
 				});
+			} else {
+				socket.emit("leaveroom", { success: "未加入房间" }); // 发送错误消息给客户端
 			}
 			socket.emit("leaveroom", { success: "离开成功" }); // 发送成功消息给客户端
 		} catch (err) {
