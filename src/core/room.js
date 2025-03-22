@@ -218,7 +218,7 @@ export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 				socket.emit("getRoomUsers", { error: "房间名不能为空" }); // 发送错误消息给客户端
 				return; // 终止函数执行
 			}
-			const roomId = data.room;
+			const roomId = data.id;
 			const room = io.sockets.adapter.rooms.get(roomId);
 			if (!room) {
 				socket.emit("getRoomUsers", { error: "房间不存在" }); // 发送错误消息给客户端
