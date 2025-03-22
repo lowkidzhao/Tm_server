@@ -226,7 +226,7 @@ export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 			}
 			const users = Array.from(room).map((socketId) => ({
 				socketId,
-				username: userAliasMap.get(socketId),
+				username: socketMap.get(socketId),
 			}));
 			socket.emit("getRoomUsers", { success: users }); // 发送成功消息给客户端
 		} catch (err) {
