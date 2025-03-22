@@ -117,11 +117,12 @@ export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 			if (joinedRooms.length > 0) {
 				joinedRooms.forEach((room) => {
 					socket.leave(room);
-					io.to(roomId).emit("user_left", {
+					io.to(room).emit("user_left", {
 						success: socketMap.get(socket.id),
 					}); // 广播给房间成员name
 				});
 			}
+			socket.emit("leaveroom", { success: "离开成功" }); // 发送成功消息给客户端
 		} catch (err) {
 			logger.error("离开房间失败:", err);
 			socket.emit("leaveroom", { error: "离开房间失败" }); // 发送错误消息给客户端
