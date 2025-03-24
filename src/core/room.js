@@ -228,7 +228,7 @@ export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 				socketId,
 				username: socketMap.get(socketId),
 			}));
-			socket.emit("getRoomUsers", { success: JSON.stringify(users) }); // 发送成功消息给客户端
+			socket.emit("getRoomUsers", { success: users }); // 发送成功消息给客户端
 		} catch (err) {
 			logger.error("获取房间用户失败:", err); // 记录错误日志
 			socket.emit("getRoomUsers", { error: "获取房间用户失败" }); // 发送错误消息给客户端
