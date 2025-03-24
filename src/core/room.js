@@ -187,8 +187,8 @@ export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 				socket.emit("getMessages", { error: "房间名不能为空" }); // 发送错误消息给客户端
 				return; // 终止函数执行
 			}
-			const { name } = data; // 解构数据
-			const room = dataSql.getRoom.get({ name: name }); // 执行数据库操作
+			const { id } = data; // 解构数据
+			const room = dataSql.getRoom.get({ room_id: id }); // 执行数据库操作
 			if (!room) {
 				socket.emit("getMessages", { error: "房间不存在" }); // 发送错误消息给客户端
 				return; // 终止函数执行
