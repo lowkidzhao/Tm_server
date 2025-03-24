@@ -90,6 +90,10 @@ export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 			); // 排除 socket 自动加入的私有房间
 			if (joinedRooms.length > 0) {
 				joinedRooms.forEach((roomToLeave) => {
+					if (roomToLeave === room.id) {
+						socket.emit("joinroom", { error: "已加入该房间" }); // 发送错误消息给客户端
+						return; // 终止函数执行
+					}
 					socket.leave(roomToLeave);
 					io.to(roomToLeave).emit("user_left", {
 						// 使用正确的房间ID变量
