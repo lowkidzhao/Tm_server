@@ -95,7 +95,7 @@ export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 						return; // 终止函数执行
 					}
 					socket.leave(roomToLeave);
-					io.to(roomToLeave).emit("user_left", {
+					socket.to(roomToLeave).emit("user_left", {
 						// 使用正确的房间ID变量
 						success: socketMap.get(socket.id),
 					});
@@ -121,7 +121,7 @@ export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 			if (joinedRooms.length > 0) {
 				joinedRooms.forEach((room) => {
 					socket.leave(room);
-					io.to(room).emit("user_left", {
+					socket.to(room).emit("user_left", {
 						success: socketMap.get(socket.id),
 					}); // 广播给房间成员name
 				});
