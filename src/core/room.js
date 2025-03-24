@@ -155,7 +155,7 @@ export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 					);
 					const result = dataSql.insertMessage.run({
 						room_id: room,
-						user_id: name,
+						name: name,
 						message,
 						timestamp: time,
 					});

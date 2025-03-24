@@ -45,7 +45,7 @@ export default (db) => ({
 	getRoomById: db.prepare(`SELECT * FROM rooms WHERE id = :id`),
 	//聊天
 	insertMessage: db.prepare(`
-    INSERT INTO messages (room_id, user_id, message, timestamp) VALUES (:room_id, :user_id, :message, datetime('now'))
+    INSERT INTO messages (room_id, name, message, timestamp) VALUES (:room_id, :name, :message, datetime('now'))
   `),
 	getMessages: db.prepare(`
     SELECT * FROM messages WHERE room_id = :room_id ORDER BY timestamp DESC LIMIT 100
