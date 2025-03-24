@@ -88,18 +88,21 @@ export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 			const joinedRooms = Array.from(socket.rooms).filter(
 				(room) => room !== socket.id
 			); // 排除 socket 自动加入的私有房间
+			let shouldReturn = false;
 			if (joinedRooms.length > 0) {
-				joinedRooms.forEach((roomToLeave) => {
+				for (const roomToLeave of joinedRooms) {
+					// 改用for循环便于流程控制
 					if (roomToLeave === room.id) {
-						socket.emit("joinroom", { error: "已加入该房间" }); // 发送错误消息给客户端
-						return; // 终止函数执行
+						socket.emit("joinroom", { error: "已加入该房间" });
+						shouldReturn = true;
+						break;
 					}
 					socket.leave(roomToLeave);
 					socket.to(roomToLeave).emit("user_left", {
-						// 使用正确的房间ID变量
 						success: socketMap.get(socket.id),
 					});
-				});
+				}
+				if (shouldReturn) return;
 			}
 			// 使用 Socket.IO 原生房间功能
 			const roomId = room.id;
