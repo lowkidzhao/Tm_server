@@ -102,7 +102,7 @@ db.prepare(
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         room_id INTEGER NOT NULL,
-        user_id INTEGER NOT NULL,
+        name INTEGER NOT NULL,
         message TEXT NOT NULL,
         timestamp TEXT NOT NULL
     )   
