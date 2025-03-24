@@ -48,6 +48,6 @@ export default (db) => ({
     INSERT INTO messages (room_id, name, message, timestamp) VALUES (:room_id, :name, :message, datetime('now','localtime'))
   `),
 	getMessages: db.prepare(`
-    SELECT * FROM messages WHERE room_id = :room_id ORDER BY timestamp DESC LIMIT 100
+    SELECT * FROM messages WHERE room_id = :room_id ORDER BY timestamp ASC LIMIT 100
   `),
 });
