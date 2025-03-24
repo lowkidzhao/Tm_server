@@ -104,7 +104,7 @@ export default function main(socket, userAliasMap, socketMap, dataSql, io) {
 			// 使用 Socket.IO 原生房间功能
 			const roomId = room.id;
 			socket.join(roomId); // 加入系统房间
-			io.to(roomId).emit("user_joined", {
+			socket.to(roomId).emit("user_joined", {
 				success: socketMap.get(socket.id),
 			}); // 广播给房间成员name
 			socket.emit("joinroom", { success: "加入成功" }); // 发送成功消息给客户端
