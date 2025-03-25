@@ -209,4 +209,30 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 			logger.error("断开连接出错:", err);
 		}
 	});
+	//发起私聊
+	socket.on("privateMessage", (data) => {
+		// 新增空数据校验
+		if (!data) {
+			socket.emit("privateMessage", { error: "无效的请求格式" });
+			return;
+		}
+		const { name, message } = data;
+		try {
+			// 检查目标用户是否在线
+			const targetSocketId = userAliasMap.get(name);
+			if (!targetSocketId) {
+				socket.emit("privateMessage", { error: "目标用户不在线" });
+				return;
+			}
+			// 发送私聊消息给目标用户
+			name = socketMap.get(socket.id);
+			io.to(targetSocketId).emit("getPrivateMessage", {
+				success: "申请连接by" + name,
+			});
+			socket.emit("privateMessage", "发送成功");
+		} catch (err) {
+			logger.error("私聊出错:", err);
+			socket.emit("privateMessage", { error: "私聊出错" });
+		}
+	});
 }
