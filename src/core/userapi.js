@@ -227,7 +227,8 @@ export default function userapi(socket, userAliasMap, socketMap, dataSql) {
 			// 发送私聊消息给目标用户
 			name = socketMap.get(socket.id);
 			io.to(targetSocketId).emit("getPrivateMessage", {
-				success: "申请连接by" + name,
+				success: name,
+				message: "申请私聊",
 			});
 			socket.emit("privateMessage", "发送成功");
 		} catch (err) {
