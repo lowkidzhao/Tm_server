@@ -48,7 +48,7 @@ export default function webrtcapi(socket, userAliasMap) {
 			}
 
 			if (!targetSocketId) {
-				throw new Error("目标用户不存在");
+				logger.error("icecandidate", { error: "目标用户不存在" });
 			}
 			socket.to(targetSocketId).emit("remote-icecandidate", data.candidate);
 		} catch (err) {
