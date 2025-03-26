@@ -14,6 +14,7 @@ export default function webrtcapi(socket, userAliasMap) {
 				socket.emit("offer", { error: "目标用户不存在或未登录" });
 				return;
 			}
+			logger.info(`offer 发送给 ${targetSocketId}`);
 			socket.to(targetSocketId).emit("offer_get", {
 				id: socket.id,
 				offer: data.offer,
