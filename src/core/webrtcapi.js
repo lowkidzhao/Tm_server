@@ -10,15 +10,16 @@ export default function webrtcapi(socket, userAliasMap) {
 	socket.on("offer", (data) => {
 		try {
 			const targetSocketId = userAliasMap.get(data.name);
+			logger.info(`所有用户 ${userAliasMap}`);
 			if (!targetSocketId) {
 				socket.emit("offer", { error: "目标用户不存在或未登录" });
 				return;
 			}
-			logger.info(`offer 发送给 ${targetSocketId}`);
 			socket.to(targetSocketId).emit("offer_get", {
 				id: socket.id,
 				offer: data.offer,
 			});
+			logger.info(`offer 发送给 ${targetSocketId}`);
 		} catch (err) {
 			logger.error("offer 处理失败:", err);
 			socket.emit("offer", { error: err.message });
