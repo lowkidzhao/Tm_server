@@ -53,7 +53,7 @@ export function Start(io, db) {
 			// 调用userapi
 			userapi(socket, userAliasMap, socketMap, dataSql);
 			// 调用webrtcapi
-			webrtcapi(socket, userAliasMap);
+			webrtcapi(socket, userAliasMap, io);
 			// 调用main
 			main(socket, userAliasMap, socketMap, dataSql);
 			// 调用room

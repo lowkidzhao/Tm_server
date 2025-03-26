@@ -5,21 +5,19 @@ import logger from "../log/logger.js";
  * @param {Socket} socket - Socket 连接实例
  * @param {Map<string, string>} userAliasMap - 用户名到 socket.id 的映射
  */
-export default function webrtcapi(socket, userAliasMap) {
+export default function webrtcapi(socket, userAliasMap, io) {
 	// 监听webrtc-offer事件（offer）
 	socket.on("offer", (data) => {
 		try {
 			const targetSocketId = userAliasMap.get(data.name);
-			logger.info(`所有用户 ${userAliasMap}`);
 			if (!targetSocketId) {
 				socket.emit("offer", { error: "目标用户不存在或未登录" });
 				return;
 			}
-			socket.to(targetSocketId).emit("offer_get", {
+			io.to(targetSocketId).emit("offer_get", {
 				id: socket.id,
 				offer: data.offer,
 			});
-			logger.info(`offer 发送给 ${targetSocketId}`);
 		} catch (err) {
 			logger.error("offer 处理失败:", err);
 			socket.emit("offer", { error: err.message });
@@ -33,7 +31,7 @@ export default function webrtcapi(socket, userAliasMap) {
 			if (!targetSocketId) {
 				socket.emit("answer", { error: "answer时目标用户不存在" });
 			}
-			socket.to(targetSocketId).emit("answer_get", data.answer);
+			io.to(targetSocketId).emit("answer_get", data.answer);
 		} catch (err) {
 			logger.error("answer 处理失败:", err);
 			socket.emit("answer", { error: err.message });
@@ -52,7 +50,7 @@ export default function webrtcapi(socket, userAliasMap) {
 			if (!targetSocketId) {
 				socket.emit("icecandidate", { error: "目标用户不存在" });
 			}
-			socket.to(targetSocketId).emit("remote-icecandidate", data.candidate);
+			io.to(targetSocketId).emit("remote-icecandidate", data.candidate);
 		} catch (err) {
 			logger.error("icecandidate 处理失败:", err);
 			socket.emit("icecandidate", { error: err.message });
