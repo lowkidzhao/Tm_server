@@ -11,7 +11,8 @@ export default function webrtcapi(socket, userAliasMap) {
 		try {
 			const targetSocketId = userAliasMap.get(data.name);
 			if (!targetSocketId) {
-				throw new Error("目标用户不存在或未登录");
+				socket.emit("offer", { error: "目标用户不存在或未登录" });
+				return;
 			}
 			socket.to(targetSocketId).emit("offer_get", {
 				id: socket.id,
